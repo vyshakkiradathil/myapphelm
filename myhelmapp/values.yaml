@@ -1,18 +1,20 @@
 # Default values for myhelmapp.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+name: myapp 
+replicas: 1
 
-replicaCount: 1
-
-image:
-  repository: nginx
-  pullPolicy: IfNotPresent
+image: <+artifacts.primary.image> 
+  # repository: nginx
+  # pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  # tag: ""
 
-imagePullSecrets: []
+# imagePullSecrets: <+artifacts.primary.imagePullSecret>
 nameOverride: ""
 fullnameOverride: ""
+
+serviceType: LoadBalancer 
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -35,6 +37,8 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
+
+serviceTargetPort: 80 
 
 service:
   type: ClusterIP

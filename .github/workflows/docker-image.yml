@@ -45,8 +45,8 @@ jobs:
 
     - name: Publish Helm Chart to GitHub Packages
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-        helm push myhelmapp-0.1.0.tgz oci://ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}
+        docker login ghcr.io -u ${{ github.repository_owner }} -p ${{ secrets.GITHUB_TOKEN }}
+        helm push myhelmapp-0.1.0.tgz oci://ghcr.io/${{ github.repository_owner }}/myhelmapp:0.1.0
       env:
         CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         HELM_EXPERIMENTAL_OCI: 1

@@ -12,8 +12,8 @@ spec:
       labels:  
         app: {{.Values.name}}  
     spec:  
+      imagePullSecrets:  
+      - name: {{.Values.name}}-dockercfg
       containers:  
       - name: {{.Values.name}}  
         image: {{.Values.image}}
-      imagePullSecrets:
-      - name: {{.Values.imagePullSecrets}} 

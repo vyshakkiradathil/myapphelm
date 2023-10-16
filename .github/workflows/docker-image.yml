@@ -31,8 +31,9 @@ jobs:
         HELM_PASSWORD: ${{ secrets.HELM_PASSWORD }}
       run: |
         helm registry login https://myjfrogtestenv.jfrog.io/artifactory/api/helm/helm-helm --username ${{ env.HELM_USERNAME }}  --password ${{ secrets.HELM_PASSWORD }}
+        helm repo add helm-helm https://myjfrogtestenv.jfrog.io/artifactory/api/helm/helm-helm
         helm package myhelmapp
-        helm push myhelmapp-0.1.0.tgz oci://myjfrogtestenv.jfrog.io/artifactory/api/helm/helm-helm/myhelmapp-0.1.0.tgz
+        helm push myhelmapp-0.1.0.tgz helm-helm
 
     
 

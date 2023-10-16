@@ -10,7 +10,7 @@ image: <+artifacts.primary.image>
   # Overrides the image tag whose default is the chart appVersion.
   # tag: ""
 
-# imagePullSecrets: <+artifacts.primary.imagePullSecret>
+imagePullSecrets: <+artifacts.primary.imagePullSecret>
 nameOverride: ""
 fullnameOverride: ""
 

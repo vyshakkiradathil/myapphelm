@@ -39,6 +39,7 @@ securityContext: {}
   # runAsUser: 1000
 
 serviceTargetPort: 80 
+servicePort: 80
 
 service:
   type: ClusterIP

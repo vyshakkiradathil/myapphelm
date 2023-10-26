@@ -44,7 +44,7 @@ jobs:
         release_name: Release ${{ github.run_id }}
         body: |
           Changes in this Release
-          - Update the Docker Image: myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ env.IMAGE_TAG }}
+          - Update the Docker Image: myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ github.run_id }}
         draft: false
         prerelease: false
       

@@ -35,15 +35,24 @@ jobs:
         helm package myhelmapp
         curl -u ${{ env.HELM_USERNAME }}:${{ secrets.HELM_PASSWORD }} -T /home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.6.tgz "https://myjfrogtestenv.jfrog.io/artifactory/helm-helm/myhelmapp-0.1.6.tgz"
     # release the package
-    - name: release package
+    - name: release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.run_id }}
         release_name: Release ${{ github.run_id }}
-        body_path: /home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.6.tgz
+        body: |
+          Changes in this Release
+          - First Release
         draft: false
         prerelease: false
+    # - name: publish release
+    #   uses: actions/publish-release@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     release_id: ${{ steps.release.outputs.release_id }}
+    #     artifact_path: /home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.6.tgz
       
       

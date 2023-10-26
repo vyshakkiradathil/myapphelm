@@ -45,12 +45,5 @@ jobs:
         body_path: /home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.6.tgz
         draft: false
         prerelease: false
-    - name: publish release
-      uses: actions/publish-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        release_id: Release ${{ github.run_id }}
-        artifact_path: /home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.6.tgz
       
       

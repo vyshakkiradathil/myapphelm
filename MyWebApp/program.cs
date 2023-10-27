@@ -1,6 +1,6 @@
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.MapGet("/", () => "WELOCOME TO MY APP V23!");
+app.MapGet("/", () => "WELOCOME TO MY APP V24!");
 
 app.Run();

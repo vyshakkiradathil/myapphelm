@@ -1,7 +1,12 @@
-name: Build and Push Docker Image
+name: Multi-Stage Deployment
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - feature
+      - develop
+      - main
 
 jobs:
   build:
@@ -32,17 +37,95 @@ jobs:
         helm package myhelmapp
         curl -u ${{ env.HELM_USERNAME }}:${{ secrets.HELM_PASSWORD }} -T /home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.6.tgz "https://myjfrogtestenv.jfrog.io/artifactory/helm-helm/myhelmapp-0.1.6.tgz"
 
-    - name: release
+    - name: Publish artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: published-helm-app
+        path: '/home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.6.tgz'
+
+  deploy-dev:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dev
+    if: github.ref == 'refs/heads/feature' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to DEV
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.run_id }}
-        release_name: Release ${{ github.run_id }}
+        release_name: DEV ${{ github.run_id }}
         body: |
           Changes in this Release
+          - Deployment to DEV
           - Update the Docker Image: myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ github.run_id }}
         draft: false
         prerelease: false
-      
-      
+
+  deploy-qa:
+    needs: deploy-dev
+    runs-on: ubuntu-latest
+    environment: qa
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+    
+    steps:
+
+    - name: Deploy to QA
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.run_id }}
+        release_name: QA ${{ github.run_id }}
+        body: |
+          Changes in this Release
+          - Deployment to QA
+          - Update the Docker Image: myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ github.run_id }}
+        draft: false
+        prerelease: false
+
+  deploy-uat:
+    needs: deploy-qa
+    runs-on: ubuntu-latest
+    environment: uat
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+
+    - name: Deploy to UAT
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.run_id }}
+        release_name: UAT ${{ github.run_id }}
+        body: |
+          Changes in this Release
+          - Deployment to UAT
+          - Update the Docker Image: myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ github.run_id }}
+        draft: false
+        prerelease: false
+
+  deploy-prod:
+    needs: deploy-uat
+    runs-on: ubuntu-latest
+    environment: prod
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+            
+    - name: Deploy to PROD
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.run_id }}
+        release_name: PROD ${{ github.run_id }}
+        body: |
+          Changes in this Release
+          - Deployment to PROD
+          - Update the Docker Image: myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ github.run_id }}
+        draft: false
+        prerelease: false

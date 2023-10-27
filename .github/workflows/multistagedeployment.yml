@@ -1,0 +1,119 @@
+name: Multi-Stage-Deployment
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature
+      - develop
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    
+    - name: Build and push Docker image JFROG Artifacotry
+      env:
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        IMAGE_TAG: ${{ github.run_id }}
+      run: |
+        docker login -u $DOCKERHUB_USERNAME myjfrogtestenv.jfrog.io -p $DOCKERHUB_PASSWORD
+        docker build -t helloworld-app:${{ env.IMAGE_TAG }} .
+        docker tag helloworld-app:${{ env.IMAGE_TAG }} myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ env.IMAGE_TAG }}
+        docker push myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ env.IMAGE_TAG }}
+
+    - name: Helm Package
+      env:
+        HELM_USERNAME: ${{ secrets.HELM_USERNAME }}
+        HELM_PASSWORD: ${{ secrets.HELM_PASSWORD }}
+      run: |
+        helm registry login https://myjfrogtestenv.jfrog.io/artifactory/api/helm/helm-helm --username ${{ env.HELM_USERNAME }}  --password ${{ secrets.HELM_PASSWORD }}
+        helm repo add helm-helm https://myjfrogtestenv.jfrog.io/artifactory/api/helm/helm-helm --username ${{ env.HELM_USERNAME }}  --password ${{ secrets.HELM_PASSWORD }}
+        helm package myhelmapp
+        curl -u ${{ env.HELM_USERNAME }}:${{ secrets.HELM_PASSWORD }} -T /home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.6.tgz "https://myjfrogtestenv.jfrog.io/artifactory/helm-helm/myhelmapp-0.1.6.tgz"
+
+    - name: Publish artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: published-helm-app
+        path: '/home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.6.tgz'
+
+  deploy-dev:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: dev
+    if: github.ref == 'refs/heads/feature' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to DEV
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: DEV-${{ github.run_id }}
+        release_name: ${{ github.run_id }}
+        body: ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+  deploy-qa:
+    needs: deploy-dev
+    runs-on: ubuntu-latest
+    environment: qa
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+    
+    steps:
+
+    - name: Deploy to QA
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: QA-${{ github.run_id }}
+        release_name: ${{ github.run_id }}
+        body: ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+  deploy-uat:
+    needs: deploy-qa
+    runs-on: ubuntu-latest
+    environment: uat
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+
+    - name: Deploy to UAT
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: UAT-${{ github.run_id }}
+        release_name: ${{ github.run_id }}
+        body: ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+  deploy-prod:
+    needs: deploy-uat
+    runs-on: ubuntu-latest
+    environment: prod
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+            
+    - name: Deploy to PROD
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: PROD-${{ github.run_id }}
+        release_name: ${{ github.run_id }}
+        body: ${{ github.ref }}
+        draft: false
+        prerelease: false

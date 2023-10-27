@@ -1,1 +1,1 @@
-![Workflow status](https://github.com/vyshakkiradathil/myapphelm/workflows/Multi-Stage Deployment/badge.svg)
+![Workflow status](https://github.com/vyshakkiradathil/myapphelm/workflows/Multi-Stage-Deployment/badge.svg)

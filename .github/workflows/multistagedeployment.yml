@@ -1,4 +1,4 @@
-name: Multi-Stage Deployment
+name: Multi-Stage-Deployment
 
 on:
   workflow_dispatch:

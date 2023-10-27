@@ -55,8 +55,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.run_id }}
-        release_name: DEV ${{ github.run_id }}
+        tag_name: DEV ${{ github.run_id }}
+        release_name: ${{ github.run_id }}
         body: ${{ github.ref }}
         draft: false
         prerelease: false
@@ -74,8 +74,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.run_id }}
-        release_name: QA ${{ github.run_id }}
+        tag_name: QA ${{ github.run_id }}
+        release_name: ${{ github.run_id }}
         body: ${{ github.ref }}
         draft: false
         prerelease: false
@@ -93,8 +93,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.run_id }}
-        release_name: UAT ${{ github.run_id }}
+        tag_name: UAT ${{ github.run_id }}
+        release_name: ${{ github.run_id }}
         body: ${{ github.ref }}
         draft: false
         prerelease: false
@@ -112,8 +112,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.run_id }}
-        release_name: PROD ${{ github.run_id }}
+        tag_name: PROD ${{ github.run_id }}
+        release_name: ${{ github.run_id }}
         body: ${{ github.ref }}
         draft: false
         prerelease: false

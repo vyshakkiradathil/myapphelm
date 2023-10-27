@@ -57,10 +57,7 @@ jobs:
       with:
         tag_name: ${{ github.run_id }}
         release_name: DEV ${{ github.run_id }}
-        body: |
-          Changes in this Release
-          - Deployment to DEV
-          - Update the Docker Image: myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ github.run_id }}
+        body: ${{ github.ref }}
         draft: false
         prerelease: false
 
@@ -79,10 +76,7 @@ jobs:
       with:
         tag_name: ${{ github.run_id }}
         release_name: QA ${{ github.run_id }}
-        body: |
-          Changes in this Release
-          - Deployment to QA
-          - Update the Docker Image: myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ github.run_id }}
+        body: ${{ github.ref }}
         draft: false
         prerelease: false
 
@@ -101,10 +95,7 @@ jobs:
       with:
         tag_name: ${{ github.run_id }}
         release_name: UAT ${{ github.run_id }}
-        body: |
-          Changes in this Release
-          - Deployment to UAT
-          - Update the Docker Image: myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ github.run_id }}
+        body: ${{ github.ref }}
         draft: false
         prerelease: false
 
@@ -123,9 +114,6 @@ jobs:
       with:
         tag_name: ${{ github.run_id }}
         release_name: PROD ${{ github.run_id }}
-        body: |
-          Changes in this Release
-          - Deployment to PROD
-          - Update the Docker Image: myjfrogtestenv.jfrog.io/docker/helloworld-app:${{ github.run_id }}
+        body: ${{ github.ref }}
         draft: false
         prerelease: false

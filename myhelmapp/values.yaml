@@ -15,6 +15,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 serviceType: LoadBalancer 
+internalLb: true
 
 serviceAccount:
   # Specifies whether a service account should be created

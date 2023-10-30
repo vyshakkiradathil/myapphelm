@@ -3,7 +3,7 @@ kind: Service
 metadata:  
   name: {{.Values.name}}-svc
   annotations:  
-    service.beta.kubernetes.io/azure-load-balancer-internal: {{.Values.internalLb}}  
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 spec:  
   type: {{.Values.serviceType}}  
   ports:  

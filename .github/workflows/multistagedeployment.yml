@@ -55,8 +55,9 @@ jobs:
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG_NAME: ${{ env.tag_name }}
       with:
-        tag_name: $tag_name
+        tag_name: DEV-${{ env.TAG_NAME }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -84,8 +85,9 @@ jobs:
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG_NAME: ${{ env.tag_name }}
       with:
-        tag_name: QA-$tag_name
+        tag_name: QA-${{ env.TAG_NAME }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -113,8 +115,9 @@ jobs:
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG_NAME: ${{ env.tag_name }}
       with:
-        tag_name: UAT-$tag_name
+        tag_name: UAT-${{ env.TAG_NAME }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -142,8 +145,9 @@ jobs:
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG_NAME: ${{ env.tag_name }}
       with:
-        tag_name: PROD-$tag_name
+        tag_name: PROD-${{ env.TAG_NAME }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:

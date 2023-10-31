@@ -35,13 +35,7 @@ jobs:
         helm registry login https://myjfrogtestenv1.jfrog.io/artifactory/api/helm/helm-helm --username ${{ env.HELM_USERNAME }}  --password ${{ secrets.HELM_PASSWORD }}
         helm repo add helm-helm https://myjfrogtestenv1.jfrog.io/artifactory/api/helm/helm-helm --username ${{ env.HELM_USERNAME }}  --password ${{ secrets.HELM_PASSWORD }}
         helm package myhelmapp
-        curl -u ${{ env.HELM_USERNAME }}:${{ secrets.HELM_PASSWORD }} -T /home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.9.tgz "https://myjfrogtestenv1.jfrog.io/artifactory/helm-helm/myhelmapp-0.1.9.tgz"
-
-    - name: Publish artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: published-helm-app
-        path: '/home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.9.tgz'
+        curl -u ${{ env.HELM_USERNAME }}:${{ secrets.HELM_PASSWORD }} -T /home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.9.tgz "https://myjfrogtestenv1.jfrog.io/artifactory/helm-helm/myhelmapp-0.1.9.tgz"     
 
   deploy-dev:
     needs: build
@@ -50,12 +44,20 @@ jobs:
     if: github.ref == 'refs/heads/feature' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
     
     steps:
+    - name: Generate Random Number for tag_name
+      id: tag_name
+      run: |
+        current_time=$(date +%s%3N)
+        tag_name=$((current_time % 100000))
+        echo "tag_name=$tag_name" >> "$GITHUB_ENV"
+
     - name: Deploy to DEV
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG_NAME: ${{ env.tag_name }}
       with:
-        tag_name: DEV-${{ github.run_number }}
+        tag_name: DEV-${{ env.TAG_NAME }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -72,13 +74,20 @@ jobs:
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
     
     steps:
+    - name: Generate Random Number for tag_name
+      id: tag_name
+      run: |
+        current_time=$(date +%s%3N)
+        tag_name=$((current_time % 100000))
+        echo "tag_name=$tag_name" >> "$GITHUB_ENV" 
 
     - name: Deploy to QA
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG_NAME: ${{ env.tag_name }}
       with:
-        tag_name: QA-${{ github.run_number }}
+        tag_name: QA-${{ env.TAG_NAME }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -94,14 +103,21 @@ jobs:
     environment: uat
     if: github.ref == 'refs/heads/main'
     
-    steps:
+    steps:  
+    - name: Generate Random Number for tag_name
+      id: tag_name
+      run: |
+        current_time=$(date +%s%3N)
+        tag_name=$((current_time % 100000))
+        echo "tag_name=$tag_name" >> "$GITHUB_ENV"
 
     - name: Deploy to UAT
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG_NAME: ${{ env.tag_name }}
       with:
-        tag_name: UAT-${{ github.run_number }}
+        tag_name: UAT-${{ env.TAG_NAME }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -118,13 +134,20 @@ jobs:
     if: github.ref == 'refs/heads/main'
     
     steps:
-            
+    - name: Generate Random Number for tag_name
+      id: tag_name
+      run: |
+        current_time=$(date +%s%3N)
+        tag_name=$((current_time % 100000))
+        echo "tag_name=$tag_name" >> "$GITHUB_ENV"
+
     - name: Deploy to PROD
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TAG_NAME: ${{ env.tag_name }}
       with:
-        tag_name: PROD-${{ github.run_number }}
+        tag_name: PROD-${{ env.TAG_NAME }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:

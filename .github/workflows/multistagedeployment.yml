@@ -49,7 +49,7 @@ jobs:
       run: |
         current_time=$(date +%s%3N)
         tag_name=$((current_time % 100000))
-        echo "::set-env name=TAG_NAME::$tag_name"
+        echo "TAG_NAME=$tag_name" >> "$GITHUB_ENV"
 
     - name: Deploy to DEV
       uses: actions/create-release@v1
@@ -78,7 +78,7 @@ jobs:
       run: |
         current_time=$(date +%s%3N)
         tag_name=$((current_time % 100000))
-        echo "::set-env name=TAG_NAME::$tag_name" 
+        echo "TAG_NAME=$tag_name" >> "$GITHUB_ENV" 
 
     - name: Deploy to QA
       uses: actions/create-release@v1
@@ -107,7 +107,7 @@ jobs:
       run: |
         current_time=$(date +%s%3N)
         tag_name=$((current_time % 100000))
-        echo "::set-env name=TAG_NAME::$tag_name"
+        echo "TAG_NAME=$tag_name" >> "$GITHUB_ENV"
 
     - name: Deploy to UAT
       uses: actions/create-release@v1
@@ -136,7 +136,7 @@ jobs:
       run: |
         current_time=$(date +%s%3N)
         tag_name=$((current_time % 100000))
-        echo "::set-env name=TAG_NAME::$tag_name"
+        echo "TAG_NAME=$tag_name" >> "$GITHUB_ENV"
 
     - name: Deploy to PROD
       uses: actions/create-release@v1

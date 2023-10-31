@@ -10,6 +10,8 @@ on:
 
 jobs:
   build:
+    outputs:
+      tag_name: ${{ steps.tag_name.outputs.tag_name }}
     runs-on: ubuntu-latest
 
     steps:
@@ -37,11 +39,12 @@ jobs:
         helm package myhelmapp
         curl -u ${{ env.HELM_USERNAME }}:${{ secrets.HELM_PASSWORD }} -T /home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.9.tgz "https://myjfrogtestenv1.jfrog.io/artifactory/helm-helm/myhelmapp-0.1.9.tgz"
 
-    - name: Publish artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: published-helm-app
-        path: '/home/runner/work/myapphelm/myapphelm/myhelmapp-0.1.9.tgz'
+    - name: Generate Random Number for tag_name
+      id: tag_name
+      run: |
+        current_time=$(date +%s%3N)
+        tag_name=$((current_time % 100000))
+        echo "::set-output name=tag_name::$tag_name"      
 
   deploy-dev:
     needs: build
@@ -55,7 +58,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: DEV-${{ github.run_number }}
+        tag_name: DEV-${{ needs.build.outputs.tag_name }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -66,7 +69,7 @@ jobs:
         prerelease: false
 
   deploy-qa:
-    needs: deploy-dev
+    needs: [deploy-dev, build]
     runs-on: ubuntu-latest
     environment: qa
     if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
@@ -78,7 +81,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: QA-${{ github.run_number }}
+        tag_name: QA-${{ needs.build.outputs.tag_name }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -89,7 +92,7 @@ jobs:
         prerelease: false
 
   deploy-uat:
-    needs: deploy-qa
+    needs: [deploy-qa, build]
     runs-on: ubuntu-latest
     environment: uat
     if: github.ref == 'refs/heads/main'
@@ -101,7 +104,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: UAT-${{ github.run_number }}
+        tag_name: UAT-${{ needs.build.outputs.tag_name }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -112,7 +115,7 @@ jobs:
         prerelease: false
 
   deploy-prod:
-    needs: deploy-uat
+    needs: [deploy-uat, build]
     runs-on: ubuntu-latest
     environment: prod
     if: github.ref == 'refs/heads/main'
@@ -124,7 +127,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: PROD-${{ github.run_number }}
+        tag_name: PROD-${{ needs.build.outputs.tag_name }}
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:

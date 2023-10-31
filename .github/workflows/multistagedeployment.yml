@@ -49,14 +49,14 @@ jobs:
       run: |
         current_time=$(date +%s%3N)
         tag_name=$((current_time % 100000))
-        echo "::set-output name=tag_name::$tag_name" 
+        echo "::set-env name=TAG_NAME::$tag_name"
 
     - name: Deploy to DEV
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: DEV-${{ steps.tag_name.outputs.random_number }}
+        tag_name: DEV-$TAG_NAME
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -78,14 +78,14 @@ jobs:
       run: |
         current_time=$(date +%s%3N)
         tag_name=$((current_time % 100000))
-        echo "::set-output name=tag_name::$tag_name" 
+        echo "::set-env name=TAG_NAME::$tag_name" 
 
     - name: Deploy to QA
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: QA-${{ steps.tag_name.outputs.random_number }}
+        tag_name: QA-$TAG_NAME
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -107,14 +107,14 @@ jobs:
       run: |
         current_time=$(date +%s%3N)
         tag_name=$((current_time % 100000))
-        echo "::set-output name=tag_name::$tag_name" 
+        echo "::set-env name=TAG_NAME::$tag_name"
 
     - name: Deploy to UAT
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: UAT-${{ steps.tag_name.outputs.random_number }}
+        tag_name: UAT-$TAG_NAME
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
@@ -136,14 +136,14 @@ jobs:
       run: |
         current_time=$(date +%s%3N)
         tag_name=$((current_time % 100000))
-        echo "::set-output name=tag_name::$tag_name" 
-            
+        echo "::set-env name=TAG_NAME::$tag_name"
+
     - name: Deploy to PROD
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: PROD-${{ steps.tag_name.outputs.random_number }}
+        tag_name: PROD-$TAG_NAME
         release_name: ${{ github.run_id }}
         body: | 
           Deployed with the following details:
